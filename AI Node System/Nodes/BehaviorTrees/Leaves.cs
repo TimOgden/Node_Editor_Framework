@@ -1,7 +1,9 @@
 using System;
 using NodeEditorFramework;
 using NodeEditorFramework.Standard;
+using NodeEditorFramework.Utilities;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Serialization;
 
 
@@ -44,18 +46,20 @@ namespace NodeEditorFramework.AI
         private bool continuous;
 
         private Vector3 destination;
-        private UnityEngine.AI.NavMeshPath path;
+        private NavMeshAgent agent;
+        private NavMeshPath path;
 
         public override void Init()
         {
             blackboard = GetManager().blackboard;
+            agent = owner.GetComponent<NavMeshAgent>();
         }
 
         public override void Start()
         {
             destination = blackboard.GetValue<Vector3>(blackboardKey);
-            monster.agent.speed = speed;
-            monster.agent.SetDestination(destination);
+            agent.speed = speed;
+            agent.SetDestination(destination);
         }
 
         public override void NodeGUI()
@@ -73,17 +77,17 @@ namespace NodeEditorFramework.AI
                 Debug.Log("Ticking " + Title);
 
             if (continuous)
-                monster.agent.SetDestination(blackboard.GetValue<Vector3>(blackboardKey));
+                agent.SetDestination(blackboard.GetValue<Vector3>(blackboardKey));
             path = new UnityEngine.AI.NavMeshPath();
-            monster.agent.CalculatePath(destination, path);
+            agent.CalculatePath(destination, path);
             if (path.status != UnityEngine.AI.NavMeshPathStatus.PathComplete)
                 return TaskResult.FAILURE;
 
-            if (!monster.agent.pathPending)
+            if (!agent.pathPending)
             {
-                if (monster.agent.remainingDistance <= monster.agent.stoppingDistance)
+                if (agent.remainingDistance <= agent.stoppingDistance)
                 {
-                    if (!monster.agent.hasPath || monster.agent.velocity.sqrMagnitude == 0f)
+                    if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
                     {
                         return TaskResult.SUCCESS;
                     }
@@ -144,7 +148,7 @@ namespace NodeEditorFramework.AI
         public float speed = 1f;
         private Quaternion desiredRotation;
         private Blackboard blackboard;
-        private UnityEngine.AI.NavMeshAgent agent;
+        private NavMeshAgent agent;
 
         public override void NodeGUI()
         {
@@ -157,7 +161,7 @@ namespace NodeEditorFramework.AI
         {
             blackboard = GetManager().blackboard;
             //agent = blackboard.GetComponent<NavMeshAgent>();
-            desiredRotation = Quaternion.LookRotation(blackboard.GetValue<Vector3>(blackboardKey) - blackboard.transform.position, Vector3.up);
+            desiredRotation = Quaternion.LookRotation(blackboard.GetValue<Vector3>(blackboardKey) - owner.position, Vector3.up);
             //agent.speed = 0f;
             //agent.SetDestination(blackboard.GetValue<Vector3>(blackboardKey));
         }
@@ -166,11 +170,11 @@ namespace NodeEditorFramework.AI
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
-            if (Quaternion.Angle(blackboard.transform.rotation, desiredRotation) <= 15f)
+            if (Quaternion.Angle(owner.rotation, desiredRotation) <= 15f)
             {
                 return TaskResult.SUCCESS;
             }
-            blackboard.transform.rotation = Quaternion.Slerp(blackboard.transform.rotation, desiredRotation, speed * Time.deltaTime);
+            owner.rotation = Quaternion.Slerp(owner.rotation, desiredRotation, speed * Time.deltaTime);
             return TaskResult.RUNNING;
         }
 
@@ -186,6 +190,7 @@ namespace NodeEditorFramework.AI
 
         public float walkRadius = 2f;
 
+        private NavMeshAgent agent;
         private Blackboard blackboard;
         [SerializeField]
         private string blackboardKey;
@@ -193,12 +198,13 @@ namespace NodeEditorFramework.AI
         public override void Init()
         {
             blackboard = GetManager().blackboard;
+            agent = owner.GetComponent<NavMeshAgent>();
         }
 
         public override void Start()
         {
             Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * walkRadius;
-            randomDirection += monster.transform.position;
+            randomDirection += owner.position;
             UnityEngine.AI.NavMeshHit hit;
             UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out hit, walkRadius, 1);
             blackboard.SetValue(blackboardKey, hit.position);

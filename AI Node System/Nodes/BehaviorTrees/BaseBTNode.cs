@@ -25,6 +25,10 @@ namespace NodeEditorFramework.AI
 		public BaseBTNode[] children = new BaseBTNode[0];
 		[SerializeField]
 		public BaseBTNode parent;
+		[SerializeField]
+		public TaskResult status;
+
+		protected Transform owner;
 
         #endregion
 

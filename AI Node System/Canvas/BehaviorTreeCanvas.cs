@@ -19,16 +19,16 @@ namespace NodeEditorFramework.AI
 
 		protected override void OnCreate()
 		{
-			Traversal = new NodeCanvasTraversal(this);
+			// Traversal = new NodeCanvasTraversal(this);
 			ValidateSelf();
 		}
 
 		public void OnEnable()
 		{
-			if(Traversal == null)
+			/*if(Traversal == null)
             {
 				Traversal = new NodeCanvasTraversal(this);
-            }
+            }*/
 			ValidateSelf();
 			// Register to other callbacks, f.E.:
 			//NodeEditorCallbacks.OnDeleteNode += OnDeleteNode;
@@ -42,8 +42,9 @@ namespace NodeEditorFramework.AI
 
 		protected override void ValidateSelf()
 		{
+			/*
 			if (Traversal == null)
-				Traversal = new NodeCanvasTraversal(this);
+				Traversal = new NodeCanvasTraversal(this); */
 			if(rootNode == null && (rootNode = nodes.Find((Node n) => n!=null && n.GetID.Equals(rootNodeID)) as RootNode) == null)
 				rootNode = Node.Create(rootNodeID, Vector2.zero, this, null, true) as RootNode;
 		}

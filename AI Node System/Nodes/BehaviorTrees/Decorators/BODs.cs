@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NodeEditorFramework;
 using NodeEditorFramework.Standard;
+using NodeEditorFramework.Utilities;
 using UnityEngine;
 
 namespace NodeEditorFramework.AI
