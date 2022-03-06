@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: fabd1fd24fae1ae46bf3a12d7c61a2ed
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - canvas: {instanceID: 0}
+  - runningHighlight: {fileID: 2800000, guid: 4295a0c9a5036b943ab18b1f5b67903c, type: 3}
+  - failureHighlight: {fileID: 2800000, guid: 96d48696a21a2a34c9c85b7ab67ae5c1, type: 3}
+  - successHighlight: {fileID: 2800000, guid: 1815c95d25d2cbd4ea3b865bb302287f, type: 3}
+  - parent: {instanceID: 0}
+  - inputKnob: {instanceID: 0}
+  - outputKnob: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
