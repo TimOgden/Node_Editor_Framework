@@ -4,7 +4,7 @@ using UnityEngine;
 using NodeEditorFramework;
 using NodeEditorFramework.Utilities;
 
-namespace NodeEditorFramework.AI
+namespace NodeEditorFramework.Standard
 {
     [Node(true, "Behavior Tree/Decorators/Services/Service", new Type[] { typeof(BehaviorTreeCanvas) })]
     public abstract class BaseService : BaseDecorator
@@ -26,24 +26,24 @@ namespace NodeEditorFramework.AI
             frequency = RTEditorGUI.FloatField("freq:" + frequency, frequency);
         }
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
             childComposite = children[0] as BaseComposite;
-            childComposite.Init();
+            childComposite.Init(owner);
         }
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             method = Method();
             blackboard.StartCoroutine(method);
         }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
               Debug.Log("Ticking " + Title);
 
-            TaskResult childResult = childComposite.Tick();
+            TaskResult childResult = childComposite.Tick(owner);
             if(childResult==TaskResult.SUCCESS || childResult==TaskResult.FAILURE)
             {
                 blackboard.StopCoroutine(method);

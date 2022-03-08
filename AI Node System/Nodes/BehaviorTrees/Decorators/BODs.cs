@@ -6,7 +6,7 @@ using NodeEditorFramework.Standard;
 using NodeEditorFramework.Utilities;
 using UnityEngine;
 
-namespace NodeEditorFramework.AI
+namespace NodeEditorFramework.Standard
 {
     [Node(true, "Behavior Tree/Decorators/BODs/BlackboardObserver", new Type[] { typeof(BehaviorTreeCanvas) })]
     public abstract class BaseBlackboardObserver : BaseDecorator
@@ -77,9 +77,9 @@ namespace NodeEditorFramework.AI
             abort_rule = RTEditorGUI.Popup("Rule:" + aborts[abort_rule], abort_rule, aborts);
         }
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
-            blackboard = GameObject.FindWithTag("Monster").GetComponent<Blackboard>();
+            blackboard = owner.GetComponent<Blackboard>();
 
             BaseBTNode p = parent;
             if ((p as BaseComposite) != null)
@@ -94,7 +94,7 @@ namespace NodeEditorFramework.AI
             parentCompsite = (BaseComposite)p;
         }
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             observedCorrectly = CheckCondition();
 
@@ -113,13 +113,13 @@ namespace NodeEditorFramework.AI
 
         public abstract bool CheckCondition();
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
             if (!observedCorrectly)
                 return TaskResult.FAILURE;
-            TaskResult childResult = children[0].Tick();
+            TaskResult childResult = children[0].Tick(owner);
             if (childResult == TaskResult.FAILURE || childResult == TaskResult.SUCCESS)
             {
                 blackboard.RemoveObserver(blackboardKey, this);
@@ -234,10 +234,9 @@ namespace NodeEditorFramework.AI
         [SerializeField]
         private float maxLength = 10f;
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
-            blackboard = GetManager().blackboard;
-            agent = blackboard.GetComponent<UnityEngine.AI.NavMeshAgent>();
+            agent = owner.GetComponent<UnityEngine.AI.NavMeshAgent>();
         }
 
         public override void NodeGUI()

@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using NodeEditorFramework;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace NodeEditorFramework.AI
+namespace NodeEditorFramework.Standard
 {
     public class Blackboard : MonoBehaviour
     {
@@ -63,7 +61,6 @@ namespace NodeEditorFramework.AI
             }
             else
             {
-                bool shouldNotify = false;
                 if (observers.TryGetValue(key, out List<BaseBlackboardObserver> os))
                 {
                     for (int i = os.Count - 1; i >= 0; i--)

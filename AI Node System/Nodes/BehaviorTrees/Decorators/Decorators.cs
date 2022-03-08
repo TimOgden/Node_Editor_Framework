@@ -7,7 +7,7 @@ using NodeEditorFramework.Utilities;
 using System;
 using System.Linq;
 
-namespace NodeEditorFramework.AI
+namespace NodeEditorFramework.Standard
 {
     [Node(true, "Behavior Tree/Decorators/Decorator", new Type[] { typeof(BehaviorTreeCanvas) })]
     public abstract class BaseDecorator : BaseBTNode
@@ -43,11 +43,11 @@ namespace NodeEditorFramework.AI
         public override string GetID { get { return ID; } }
         public override string Title { get { return "Inverter"; } }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
-            TaskResult childStatus = children[0].Tick();
+            TaskResult childStatus = children[0].Tick(owner);
             if (childStatus == TaskResult.SUCCESS)
             {
                 status = TaskResult.FAILURE;
@@ -84,12 +84,12 @@ namespace NodeEditorFramework.AI
             x = RTEditorGUI.FloatField("X:" + x, x);
         }
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
             canRun = true;
         }
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             if (canRun || Time.time - lastTime >= x)
             {
@@ -102,7 +102,7 @@ namespace NodeEditorFramework.AI
             }
         }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
@@ -128,17 +128,17 @@ namespace NodeEditorFramework.AI
 
         }
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
 
         }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
 
-            TaskResult childResult = children[0].Tick();
+            TaskResult childResult = children[0].Tick(owner);
             if (childResult != TaskResult.SUCCESS)
             {
                 status = TaskResult.RUNNING;
@@ -169,12 +169,12 @@ namespace NodeEditorFramework.AI
             x = RTEditorGUI.FloatField("X:" + x, x);
         }
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             start_time = Time.time;
         }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
@@ -187,7 +187,7 @@ namespace NodeEditorFramework.AI
                 }
                 return TaskResult.FAILURE;
             }
-            return children[0].Tick();
+            return children[0].Tick(owner);
         }
 
     }

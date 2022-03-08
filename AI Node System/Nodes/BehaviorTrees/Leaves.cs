@@ -10,7 +10,7 @@ using UnityEngine.Serialization;
 /// <summary>
 ///  Leaf node to execute actions.
 /// </summary>
-namespace NodeEditorFramework.AI
+namespace NodeEditorFramework.Standard
 {
 	[Node(true, "Behavior Tree/Leaves/Leaf", new Type[] { typeof(BehaviorTreeCanvas) })]
 	public abstract class BaseLeaf : BaseBTNode
@@ -49,13 +49,12 @@ namespace NodeEditorFramework.AI
         private NavMeshAgent agent;
         private NavMeshPath path;
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
-            blackboard = GetManager().blackboard;
             agent = owner.GetComponent<NavMeshAgent>();
         }
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             destination = blackboard.GetValue<Vector3>(blackboardKey);
             agent.speed = speed;
@@ -71,7 +70,7 @@ namespace NodeEditorFramework.AI
         }
 
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
@@ -116,18 +115,17 @@ namespace NodeEditorFramework.AI
             blackboardKey = RTEditorGUI.TextField(blackboardKey);
         }
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
-            blackboard = GetManager().blackboard;
 
         }
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             blackboard.RemoveKey(blackboardKey);
         }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
@@ -157,24 +155,23 @@ namespace NodeEditorFramework.AI
             speed = RTEditorGUI.FloatField("Speed:" + speed, speed);
         }
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
-            blackboard = GetManager().blackboard;
             //agent = blackboard.GetComponent<NavMeshAgent>();
-            desiredRotation = Quaternion.LookRotation(blackboard.GetValue<Vector3>(blackboardKey) - owner.position, Vector3.up);
+            desiredRotation = Quaternion.LookRotation(blackboard.GetValue<Vector3>(blackboardKey) - owner.transform.position, Vector3.up);
             //agent.speed = 0f;
             //agent.SetDestination(blackboard.GetValue<Vector3>(blackboardKey));
         }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
-            if (Quaternion.Angle(owner.rotation, desiredRotation) <= 15f)
+            if (Quaternion.Angle(owner.transform.rotation, desiredRotation) <= 15f)
             {
                 return TaskResult.SUCCESS;
             }
-            owner.rotation = Quaternion.Slerp(owner.rotation, desiredRotation, speed * Time.deltaTime);
+            owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, desiredRotation, speed * Time.deltaTime);
             return TaskResult.RUNNING;
         }
 
@@ -195,16 +192,15 @@ namespace NodeEditorFramework.AI
         [SerializeField]
         private string blackboardKey;
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
-            blackboard = GetManager().blackboard;
             agent = owner.GetComponent<NavMeshAgent>();
         }
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * walkRadius;
-            randomDirection += owner.position;
+            randomDirection += owner.transform.position;
             UnityEngine.AI.NavMeshHit hit;
             UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out hit, walkRadius, 1);
             blackboard.SetValue(blackboardKey, hit.position);
@@ -216,7 +212,7 @@ namespace NodeEditorFramework.AI
             walkRadius = RTEditorGUI.FloatField("r:" + walkRadius, walkRadius);
             blackboardKey = RTEditorGUI.TextField(blackboardKey);
         }
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
@@ -236,7 +232,7 @@ namespace NodeEditorFramework.AI
             inputKnob.DisplayLayout();
         }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
@@ -254,7 +250,7 @@ namespace NodeEditorFramework.AI
         public int n = 0;
         private int counter = 0; // counting up to n before returning SUCCESS
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             counter = 0;
         }
@@ -265,13 +261,13 @@ namespace NodeEditorFramework.AI
             n = RTEditorGUI.IntField("N:" + n, n);
         }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
             if (!HasBeenCalled)
             {
-                Init();
+                Init(owner);
                 HasBeenCalled = true;
             }
             if (counter >= n)
@@ -295,7 +291,7 @@ namespace NodeEditorFramework.AI
         public float x = 0f;
         private float start_time = 0; // counting up to x before returning SUCCESS
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             start_time = Time.time;
         }
@@ -306,7 +302,7 @@ namespace NodeEditorFramework.AI
             x = RTEditorGUI.FloatField("X:" + x, x);
         }
 
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);

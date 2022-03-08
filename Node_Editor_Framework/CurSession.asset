@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7981751927913905141
+--- !u!114 &-6226255140213375248
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3d338988a4691f43b8c0764bd85cf70, type: 3}
-  m_Name: Child 1
+  m_Name: 
   m_EditorClassIdentifier: 
-  body: {fileID: -6320119653397582997}
-  direction: 2
-  maxConnectionCount: 1
+  body: {fileID: -4870327526894302560}
+  direction: 1
+  maxConnectionCount: 0
   styleID: Flow
-  _connections: []
-  side: 2
-  sidePosition: 48.5
+  _connections:
+  - {fileID: -557455584369836252}
+  side: 3
+  sidePosition: 37.5
   sideOffset: 0
---- !u!114 &-6320119653397582997
+--- !u!114 &-4870327526894302560
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -29,17 +30,64 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be4620fa9db0beb41b2d5e2bff1656c9, type: 3}
-  m_Name: Graph Root Node
-  m_EditorClassIdentifier: 
+  m_Script: {fileID: 0}
+  m_Name: WaitXSeconds
+  m_EditorClassIdentifier: Assembly-CSharp-firstpass:NodeEditorFramework.Standard:WaitXSeconds
+  canvas: {fileID: 11400000}
+  position: {x: -27.600012, y: 258.9}
+  dynamicConnectionPorts: []
+  backgroundColor: {r: 0, g: 1, b: 0, a: 0.5}
+  debug: 0
+  children: []
+  parent: {fileID: -2653897483157887669}
+  title: 
+  inputKnob: {fileID: -6226255140213375248}
+  x: 2
+--- !u!114 &-2653897483157887669
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Root Node
+  m_EditorClassIdentifier: Assembly-CSharp-firstpass:NodeEditorFramework.Standard:RootNode
   canvas: {fileID: 11400000}
   position: {x: 0, y: 0}
   dynamicConnectionPorts: []
-  backgroundColor: {r: 1, g: 1, b: 1, a: 1}
-  flowChild1: {fileID: -7981751927913905141}
-  flowChild2: {fileID: 2818094655977796250}
-  flowChild3: {fileID: -5963614446329097599}
---- !u!114 &-5963614446329097599
+  backgroundColor: {r: 0.86, g: 0.12, b: 0.07, a: 0.75}
+  debug: 0
+  children:
+  - {fileID: -4870327526894302560}
+  - {fileID: -594036069669652168}
+  parent: {fileID: 0}
+  title: 
+  outputKnob: {fileID: -557455584369836252}
+--- !u!114 &-594036069669652168
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Succeeder
+  m_EditorClassIdentifier: Assembly-CSharp-firstpass:NodeEditorFramework.Standard:Succeeder
+  canvas: {fileID: 11400000}
+  position: {x: 157.4, y: 260.3}
+  dynamicConnectionPorts: []
+  backgroundColor: {r: 0, g: 1, b: 0, a: 0.5}
+  debug: 0
+  children: []
+  parent: {fileID: -2653897483157887669}
+  title: 
+  inputKnob: {fileID: 1256802101632490873}
+--- !u!114 &-557455584369836252
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,17 +97,63 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3d338988a4691f43b8c0764bd85cf70, type: 3}
-  m_Name: Child 3
+  m_Name: 
   m_EditorClassIdentifier: 
-  body: {fileID: -6320119653397582997}
+  body: {fileID: -2653897483157887669}
   direction: 2
   maxConnectionCount: 1
   styleID: Flow
-  _connections: []
-  side: 2
-  sidePosition: 86.5
+  _connections:
+  - {fileID: 1256802101632490873}
+  - {fileID: -6226255140213375248}
+  side: 1
+  sidePosition: 100
   sideOffset: 0
---- !u!114 &-525324092753641133
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc4ae67bf4bf0f54a8418c878a62eb9c, type: 3}
+  m_Name: CurSession
+  m_EditorClassIdentifier: 
+  editorStates:
+  - {fileID: 4522933786786869062}
+  saveName: simple
+  savePath: Assets\MyTrees\simple.asset
+  livesInScene: 0
+  nodes:
+  - {fileID: -2653897483157887669}
+  - {fileID: -594036069669652168}
+  - {fileID: -4870327526894302560}
+  groups: []
+  rootNode: {fileID: -2653897483157887669}
+--- !u!114 &1256802101632490873
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3d338988a4691f43b8c0764bd85cf70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  body: {fileID: -594036069669652168}
+  direction: 1
+  maxConnectionCount: 0
+  styleID: Flow
+  _connections:
+  - {fileID: -557455584369836252}
+  side: 3
+  sidePosition: 37.5
+  sideOffset: 0
+--- !u!114 &4522933786786869062
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,45 +169,5 @@ MonoBehaviour:
   canvas: {fileID: 11400000}
   parentEditor: {fileID: 0}
   selectedNode: {fileID: 0}
-  panOffset: {x: 0, y: 0}
-  zoom: 1
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a9396c92b94b064883de5903a0ec1b2, type: 3}
-  m_Name: CurSession
-  m_EditorClassIdentifier: 
-  editorStates:
-  - {fileID: -525324092753641133}
-  saveName: New Graph
-  savePath: 
-  livesInScene: 0
-  nodes: []
-  groups: []
-  rootNode: {fileID: -6320119653397582997}
---- !u!114 &2818094655977796250
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3d338988a4691f43b8c0764bd85cf70, type: 3}
-  m_Name: Child 2
-  m_EditorClassIdentifier: 
-  body: {fileID: -6320119653397582997}
-  direction: 2
-  maxConnectionCount: 1
-  styleID: Flow
-  _connections: []
-  side: 2
-  sidePosition: 67.5
-  sideOffset: 0
+  panOffset: {x: -138, y: -179}
+  zoom: 1.4

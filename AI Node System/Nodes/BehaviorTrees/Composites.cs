@@ -3,21 +3,48 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NodeEditorFramework;
-using NodeEditorFramework.Standard;
+using NodeEditorFramework.Utilities;
 
-namespace NodeEditorFramework.AI
+namespace NodeEditorFramework.Standard
 {
     [Node(true, "Behavior Tree/Composites/Composite", new Type[] { typeof(BehaviorTreeCanvas) })]
     public abstract class BaseComposite : BaseBTNode
     {
+        #region GUI Fields
+
+        protected Color color_ = new Color(.86f, .12f, .07f, .75f);
+
+        public override Vector2 MinSize { get { return new Vector2(100, 25); } }
+
+        public override bool AutoLayout { get { return false; } }
+
+        [ConnectionKnobAttribute("", Direction.Out, "Flow", NodeSide.Bottom)]
+        public ConnectionKnob outputKnob;
+
+        #endregion
+
+        #region Logic Fields
+
         [System.NonSerialized]
         public Queue<BaseBTNode> childrenToRun = new Queue<BaseBTNode>();
+
+        #endregion
+
+        void OnEnable()
+        {
+            backgroundColor = color_;
+        }
+
+        public override void NodeGUI()
+        {
+            title = RTEditorGUI.TextField(title);
+        }
 
         void ResetChildrenCalled()
         {
             // reset HasBeenCalled for all children left to run
             // so that once we abort and rerun them, they will still call
-            // Start()
+            // Begin()
             Queue<BaseBTNode> temp = new Queue<BaseBTNode>();
             while (childrenToRun.Count > 0)
             {
@@ -55,7 +82,7 @@ namespace NodeEditorFramework.AI
             }
         }
 
-        public override void Init()
+        public override void Init(BehaviorTreeManager owner)
         {
             foreach (BaseBTNode child in children)
             {
@@ -63,83 +90,54 @@ namespace NodeEditorFramework.AI
             }
         }
 
-        public override void Start()
+        public override void Begin(BehaviorTreeManager owner)
         {
             ResetChildrenStatuses();
         }
     }
 
+    [Node(false, "Behavior Tree/Composites/Root Node", new Type[] { typeof(BehaviorTreeCanvas) })]
     public class RootNode : BaseComposite
     {
         public const string ID = "rootNode";
         public override string GetID { get { return ID; } }
-        public override string Title { get { return "Root Node"; } }
-        public float tickingFrequency = .2f;
+        public override string Title { get { return title == "" ? "Root Node" : title + " (Root)"; } }
 
-        public Manager manager;
+        public void SetStatus(TaskResult status)
+        {
+            this.status = status;
+        }
 
         void OnEnable()
         {
-            DeactivateStatus();
+            backgroundColor = color_;
+            // DeactivateStatus();
         }
 
-        public override void Init()
+        public override void NodeGUI()
         {
-            ((BehaviorTreeCanvas)canvas).manager = manager;
+            title = RTEditorGUI.TextField(title);
+            outputKnob.DisplayLayout();
         }
 
         // Same as selector code.
-        public override TaskResult ProcessTick()
-        {
-            if (debug)
-                Debug.Log("Ticking " + Title);
-            if (children.Length == 0)
-                RecursivelyFindChildren();
-            TaskResult childResult = children[0].Tick();
-            if (childResult == TaskResult.RUNNING)
-            {
-                status = TaskResult.RUNNING;
-                return status;
-            }
-            status = childResult;
-            return status;
-        }
-
-        public IEnumerator EvalTree()
-        {
-            status = TaskResult.NOT_ACTIVE;
-            Debug.Log("Starting evaluation of tree with status: " + status);
-            while (true)
-            {
-                status = Tick();
-                if (!(status == TaskResult.NOT_ACTIVE || status == TaskResult.RUNNING))
-                {
-                    if (debug)
-                        Debug.Log("Root returned: " + status);
-                    yield return status;
-                    yield return new WaitForSeconds(tickingFrequency); // pause after full tree traversal
-                    DeactivateStatus();
-                }
-                yield return new WaitForSeconds(tickingFrequency); // ticking frequency
-            }
-        }
-    }
-
-    public class Selector : BaseComposite
-    {
-        public const string ID = "selector";
-        public override string GetID { get { return ID; } }
-        public override string Title { get { return "Selector"; } }
-
-        public override TaskResult ProcessTick()
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
 
+            if (childrenToRun.Count == 0)
+            {
+                //RecursivelyFindChildren();
+            }
+
+            Debug.Log("Children count: " + children.Length);
+            Debug.Log("Child has value: " + (children.Length > 0 ? (children[0] != null).ToString() : "no array"));
             while (childrenToRun.Count > 0)
             {
                 BaseBTNode child = childrenToRun.Peek();
-                TaskResult childResult = child.Tick();
+                
+                TaskResult childResult = child.Tick(owner);
 
                 if (childResult == TaskResult.RUNNING || childResult == TaskResult.SUCCESS)
                 {
@@ -151,15 +149,68 @@ namespace NodeEditorFramework.AI
                 }
             }
             return TaskResult.FAILURE;
+
+
+
+        }
+
+        [Node(false, "Behavior Tree/Composites/Selector", new Type[] { typeof(BehaviorTreeCanvas) })]
+        public class Selector : BaseComposite
+        {
+            [ConnectionKnobAttribute("", Direction.In, "Flow", NodeSide.Top)]
+            public ConnectionKnob inputKnob;
+            public const string ID = "selector";
+            public override string GetID { get { return ID; } }
+            public override string Title { get { return title == "" ? "Selector" : title + " (?)"; } }
+
+            public override void NodeGUI()
+            {
+                title = RTEditorGUI.TextField(title);
+                inputKnob.DisplayLayout();
+                outputKnob.DisplayLayout();
+            }
+
+            public override TaskResult ProcessTick(BehaviorTreeManager owner)
+            {
+                if (debug)
+                    Debug.Log("Ticking " + Title);
+
+                while (childrenToRun.Count > 0)
+                {
+                    BaseBTNode child = childrenToRun.Peek();
+                    TaskResult childResult = child.Tick(owner);
+
+                    if (childResult == TaskResult.RUNNING || childResult == TaskResult.SUCCESS)
+                    {
+                        return childResult;
+                    }
+                    else
+                    {
+                        childrenToRun.Dequeue();
+                    }
+                }
+                return TaskResult.FAILURE;
+            }
         }
     }
 
+    [Node(false, "Behavior Tree/Composites/Sequence", new Type[] { typeof(BehaviorTreeCanvas) })]
     public class Sequence : BaseComposite
     {
+        [ConnectionKnobAttribute("", Direction.In, "Flow", NodeSide.Top)]
+        public ConnectionKnob inputKnob;
         public const string ID = "sequence";
         public override string GetID { get { return ID; } }
-        public override string Title { get { return "Sequence"; } }
-        public override TaskResult ProcessTick()
+        public override string Title { get { return title == "" ? "Sequence" : title + " (=>)"; } }
+
+        public override void NodeGUI()
+        {
+            title = RTEditorGUI.TextField(title);
+            inputKnob.DisplayLayout();
+            outputKnob.DisplayLayout();
+        }
+
+        public override TaskResult ProcessTick(BehaviorTreeManager owner)
         {
             if (debug)
                 Debug.Log("Ticking " + Title);
@@ -167,7 +218,7 @@ namespace NodeEditorFramework.AI
             while (childrenToRun.Count > 0)
             {
                 BaseBTNode child = childrenToRun.Peek();
-                TaskResult childResult = child.Tick();
+                TaskResult childResult = child.Tick(owner);
 
                 if (childResult == TaskResult.RUNNING || childResult == TaskResult.FAILURE)
                 {
